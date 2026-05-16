@@ -1,37 +1,57 @@
+version: '3'
 services:
-  inventory_db:
-    image: postgres:15-alpine
-    container_name: inventory_db
-    restart: always
+  api-gateway-app: 
+    build: ./srcs/api-gateway-app
+    container_name: api-gateway
     environment:
-      POSTGRES_USER: $USER_DB
-      POSTGRES_PASSWORD: $PASSWORD_DB
-      POSTGRES_DB: movies_db
+      API_GATEWAY_PORT: ${API_GATEWAY_PORT}
+      API_GATEWAY_HOST: ${API_GATEWAY_HOST}
+      INVENTORY_PORT: ${INVENTORY_PORT}
+      INVENTORY_IP: ${INVENTORY_IP}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
     ports:
-      - "5432:5432"
-    volumes:
-      - inventory_data:/var/lib/postgresql/data
-  billing_db:
-    image: postgres:15-alpine
-    container_name: billing_db
-    restart: always
-    environment:
-      POSTGRES_USER: $USER_DB
-      POSTGRES_PASSWORD: $PASSWORD_DB
-      POSTGRES_DB: billing_db
-    ports:
-      - "5433:5432"
-    volumes:
-      - billing_data:/var/lib/postgresql/data
-  rabbitmq:
-    image: rabbitmq:4-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq/data
-volumes:
-  inventory_data:
-  billing_data:
-  rabbitmq_data:
+      - "3000:8081"
+networks:
+  
+
+#   inventory_db:
+#     image: postgres:15-alpine
+#     container_name: inventory_db
+#     restart: always
+#     environment:
+#       POSTGRES_USER: $USER_DB
+#       POSTGRES_PASSWORD: $PASSWORD_DB
+#       POSTGRES_DB: movies_db
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - inventory_data:/var/lib/postgresql/data
+#   billing_db:
+#     image: postgres:15-alpine
+#     container_name: billing_db
+#     restart: always
+#     environment:
+#       POSTGRES_USER: $USER_DB
+#       POSTGRES_PASSWORD: $PASSWORD_DB
+#       POSTGRES_DB: billing_db
+#     ports:
+#       - "5433:5432"
+#     volumes:
+#       - billing_data:/var/lib/postgresql/data
+#   rabbitmq:
+#     image: rabbitmq:4-management
+#     container_name: rabbitmq
+#     ports:
+#       - "5672:5672"
+#       - "15672:15672"
+#     volumes:
+#       - rabbitmq_data:/var/lib/rabbitmq/data
+# volumes:
+#   inventory_data:
+#   billing_data:
+#   rabbitmq_data:
