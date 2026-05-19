@@ -1,6 +1,6 @@
 FROM python:3.12-alpine
 
-WORKDIR /api-gateway-app
+WORKDIR /billing-app
 
 COPY requirements.txt .
 
