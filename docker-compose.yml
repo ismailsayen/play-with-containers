@@ -1,6 +1,6 @@
-version: '3'
+version: "3"
 services:
-  api-gateway-app: 
+  api-gateway-app:
     build: ./srcs/api-gateway-app
     container_name: api-gateway
     environment:
@@ -22,13 +22,35 @@ services:
     build: ./srcs/inventory-app
     container_name: inventory-app
     environment:
-      INVENTORY_DATABASE_URL:  ${INVENTORY_DATABASE_URL}
+      INVENTORY_DATABASE_URL: ${INVENTORY_DATABASE_URL}
       USER_DB: ${USER_DB}
       PASSWORD_DB: ${PASSWORD_DB}
       INVENTORY_PORT: ${INVENTORY_PORT}
       INVENTORY_HOST: ${INVENTORY_HOST}
+    depends_on:
+      - inventory_db
+
     networks:
       - inventory
+      - gateway
+
+  billing-app:
+    build: ./srcs/billing-app
+    container_name: billing-app
+    environment: 
+      BILLING_DATABASE_URL: ${BILLING_DATABASE_URL}
+      USER_DB: ${USER_DB}
+      PASSWORD_DB: ${PASSWORD_DB}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
+    depends_on:
+      - billing_db
+    networks:
+      - billing
       - gateway
 
   inventory_db:
@@ -44,6 +66,20 @@ services:
     networks:
       - inventory
 
+  billing_db:
+    image: postgres:15-alpine
+    container_name: billing_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${USER_DB}
+      POSTGRES_PASSWORD: ${PASSWORD_DB}
+      POSTGRES_DB: billing_db
+
+    volumes:
+      - billing_data:/var/lib/postgresql/data
+    networks:
+      - billing
+
   rabbit-queue:
     image: rabbitmq:4-management
     container_name: rabbit-queue
@@ -52,29 +88,16 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq/data
+      - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - gateway
 
 volumes:
   inventory_data:
-  # billing_data:
+  billing_data:
   rabbitmq_data:
+
 networks:
   gateway:
   billing:
   inventory:
-
-#   billing_db:
-#     image: postgres:15-alpine
-#     container_name: billing_db
-#     restart: always
-#     environment:
-#       POSTGRES_USER: $USER_DB
-#       POSTGRES_PASSWORD: $PASSWORD_DB
-#       POSTGRES_DB: billing_db
-#     ports:
-#       - "5433:5432"
-#     volumes:
-#       - billing_data:/var/lib/postgresql/data
-
