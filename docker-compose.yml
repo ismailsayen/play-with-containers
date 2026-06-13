@@ -65,7 +65,7 @@ services:
       - gateway
 
   inventory_db:
-    image: postgres:15-alpine
+    build: .
     container_name: inventory_db
     restart: always
     environment:
@@ -78,7 +78,7 @@ services:
       - inventory
 
   billing_db:
-    image: postgres:15-alpine
+    build: .
     container_name: billing_db
     restart: always
     environment:
