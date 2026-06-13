@@ -21,6 +21,7 @@ def callback(ch, method, properties, body):
         
     
 def start_consoming(app):
+    
     credentials=pika.PlainCredentials(
         Config.RABBITMQ_USER,
         Config.RABBITMQ_PASS

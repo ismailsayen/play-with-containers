@@ -3,6 +3,9 @@ services:
   api-gateway-app:
     build: ./srcs/api-gateway-app
     container_name: api-gateway
+    depends_on:
+      - rabbit-queue
+    restart: always
     environment:
       API_GATEWAY_PORT: ${API_GATEWAY_PORT}
       API_GATEWAY_HOST: ${API_GATEWAY_HOST}
@@ -23,6 +26,8 @@ services:
   inventory-app:
     build: ./srcs/inventory-app
     container_name: inventory-app
+    depends_on:
+      - inventory_db
     restart: always
     environment:
       INVENTORY_DATABASE_URL: ${INVENTORY_DATABASE_URL}
@@ -30,9 +35,6 @@ services:
       PASSWORD_DB: ${PASSWORD_DB}
       INVENTORY_PORT: ${INVENTORY_PORT}
       INVENTORY_HOST: ${INVENTORY_HOST}
-    depends_on:
-      - inventory_db
-
     networks:
       - inventory
       - gateway
@@ -40,6 +42,9 @@ services:
   billing-app:
     build: ./srcs/billing-app
     container_name: billing-app
+    depends_on:
+      - billing_db
+      - rabbit-queue
     restart: always
     environment: 
       BILLING_DATABASE_URL: ${BILLING_DATABASE_URL}
@@ -51,8 +56,6 @@ services:
       RABBITMQ_VHOST: ${RABBITMQ_VHOST}
       RABBITMQ_PORT: ${RABBITMQ_PORT}
       RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
-    depends_on:
-      - billing_db
     networks:
       - billing
       - gateway
@@ -78,7 +81,6 @@ services:
       POSTGRES_USER: ${USER_DB}
       POSTGRES_PASSWORD: ${PASSWORD_DB}
       POSTGRES_DB: billing_db
-
     volumes:
       - billing_data:/var/lib/postgresql/data
     networks:
@@ -92,6 +94,8 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+    ports:
+      - "15672:15672"
     networks:
       - gateway
 
