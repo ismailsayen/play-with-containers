@@ -4,7 +4,8 @@ services:
     build: ./srcs/api-gateway-app
     container_name: api-gateway
     depends_on:
-      - rabbit-queue
+      rabbit-queue:
+          condition: service_started
     restart: always
     environment:
       API_GATEWAY_PORT: ${API_GATEWAY_PORT}
@@ -27,7 +28,8 @@ services:
     build: ./srcs/inventory-app
     container_name: inventory-app
     depends_on:
-      - inventory_db
+      inventory_db:
+        condition: service_started
     restart: always
     environment:
       INVENTORY_DATABASE_URL: ${INVENTORY_DATABASE_URL}
@@ -43,8 +45,10 @@ services:
     build: ./srcs/billing-app
     container_name: billing-app
     depends_on:
-      - billing_db
-      - rabbit-queue
+      billing_db:
+        condition: service_started
+      rabbit-queue:
+          condition: service_started
     restart: always
     environment: 
       BILLING_DATABASE_URL: ${BILLING_DATABASE_URL}
