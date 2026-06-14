@@ -66,7 +66,7 @@ services:
       - gateway
 
   inventory_db:
-    build: ./srcs/database
+    build: ./srcs/inventory-database
     container_name: inventory_db
     restart: always
     environment:
@@ -85,7 +85,7 @@ services:
       - inventory
 
   billing_db:
-    build: ./srcs/database 
+    build: ./srcs/billing-database 
     container_name: billing_db
     restart: always
     environment:
@@ -104,7 +104,7 @@ services:
       start_period: 30s
 
   rabbit-queue:
-    build: ./srcs/queue
+    build: ./srcs/rabbit-queue
     container_name: rabbit-queue
     restart: always
     environment:
