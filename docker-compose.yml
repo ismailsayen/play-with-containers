@@ -24,12 +24,13 @@ services:
       - gateway
     volumes:
       - api-gateway_data:/var/lib/api-gateway
+  
   inventory-app:
     build: ./srcs/inventory-app
     container_name: inventory-app
     depends_on:
       inventory_db:
-        condition: service_started
+        condition: service_healthy
     restart: always
     environment:
       INVENTORY_DATABASE_URL: ${INVENTORY_DATABASE_URL}
@@ -46,7 +47,7 @@ services:
     container_name: billing-app
     depends_on:
       billing_db:
-        condition: service_started
+        condition: service_healthy
       rabbit-queue:
           condition: service_started
     restart: always
@@ -65,20 +66,26 @@ services:
       - gateway
 
   inventory_db:
-    build: .
+    build: ./database
     container_name: inventory_db
     restart: always
     environment:
       POSTGRES_USER: ${USER_DB}
       POSTGRES_PASSWORD: ${PASSWORD_DB}
       POSTGRES_DB: movies_db
+    healthcheck:
+      test: ["CMD", "pg_isready","-U","postgres"]
+      interval: 1m
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     volumes:
       - inventory_data:/var/lib/postgresql/data
     networks:
       - inventory
 
   billing_db:
-    build: .
+    build: ./database 
     container_name: billing_db
     restart: always
     environment:
@@ -89,6 +96,12 @@ services:
       - billing_data:/var/lib/postgresql/data
     networks:
       - billing
+    healthcheck:
+      test: ["CMD", "pg_isready","-U","postgres"]
+      interval: 1m
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 
   rabbit-queue:
     image: rabbitmq:4-management
