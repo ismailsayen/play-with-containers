@@ -185,3 +185,5 @@ Here are some useful resources to better understand Docker, Docker Compose, netw
 | Docker Compose Documentation | https://dev.to/alexmercedcoder/a-deep-dive-into-docker-compose-27h5 |
 | Docker Networking | https://docs.docker.com/network/ |
 | Docker Volumes | https://docs.docker.com/storage/volumes/ |
+| Docker architecture  | https://agenda.infn.it/event/32136/sessions/23644/attachments/95750/131779/docker%20-%20architecture.pdf |
+
